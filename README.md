@@ -28,7 +28,7 @@ modules=
 
 Check total accumulation level:
 ```terminal
-venom check --verbose melevir@gmail.com
+venom check --verbose melevir@gmail.com .
 
 ---------------------------------------------------------
 |   Module  | Total lines | Touched lines | Accumulated |
