@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/best-doctor/we_are_venom.svg?branch=master)](https://travis-ci.org/best-doctor/we_are_venom)
 [![Maintainability](https://api.codeclimate.com/v1/badges/18b141ed6576e8b6405a/maintainability)](https://codeclimate.com/github/best-doctor/we_are_venom/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/18b141ed6576e8b6405a/test_coverage)](https://codeclimate.com/github/best-doctor/we_are_venom/test_coverage)
+[![PyPI version](https://badge.fury.io/py/we_are_venom.svg)](https://badge.fury.io/py/we_are_venom)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/we_are_venom)](https://pypi.org/project/we_are_venom/)
 
 Checks which modules developer contributed using git history.
 
