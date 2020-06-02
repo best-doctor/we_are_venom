@@ -1,5 +1,9 @@
 # Venom
 
+[![Build Status](https://travis-ci.org/best-doctor/we_are_venom.svg?branch=master)](https://travis-ci.org/best-doctor/we_are_venom)
+[![Maintainability](https://api.codeclimate.com/v1/badges/18b141ed6576e8b6405a/maintainability)](https://codeclimate.com/github/best-doctor/we_are_venom/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/18b141ed6576e8b6405a/test_coverage)](https://codeclimate.com/github/best-doctor/we_are_venom/test_coverage)
+
 Checks which modules developer contributed using git history.
 
 DISCLAIMER: I use DDD, it might not work or work not as described here. Stay calm.
@@ -13,6 +17,7 @@ pip install we-are-venom
 ## Usage
 
 First, provide module structure configuration in `setup.cfg`, `venom` section:
+
 ```terminal
 [venom]
 history_depth_years=2
@@ -27,6 +32,7 @@ modules=
 ```
 
 Check total accumulation level:
+
 ```terminal
 venom check --verbose melevir@gmail.com .
 
