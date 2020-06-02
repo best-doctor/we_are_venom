@@ -1,6 +1,6 @@
 # Venom
 
-Checks, which modules developer contributed using git history.
+Checks which modules developer contributed using git history.
 
 DISCLAIMER: I use DDD, it might not work or work not as described here. Stay calm.
 
