@@ -1,5 +1,5 @@
 import collections
-from typing import List, Mapping, Any, Optional
+from typing import List, Mapping, Any, Optional, Iterable, Tuple
 
 from git import Commit
 from unidiff import PatchSet
@@ -28,6 +28,20 @@ def is_module_accumulated(
     return touched_lines >= config['min_touched_lines_for_accumulated_module']
 
 
+def get_touched_files_in_commit(commit, config) -> Iterable[Tuple[str, int]]:
+    touched_lines_per_module: DefaultDict[str, int] = collections.defaultdict(int)
+    raw_diff = commit.repo.git.diff(commit.tree)
+    for changed_file in PatchSet(raw_diff):
+        filename = changed_file.path
+        if should_be_skipped(filename, config['skip_dirs']):
+            continue
+        module = _get_file_module(filename, config['modules'])
+        if not module:
+            continue
+        touched_lines_per_module[module] += changed_file.added + changed_file.removed
+    return touched_lines_per_module.items()
+
+
 def calclulate_module_accumulation_info(
     raw_git_history: List[Commit],
     email: str,
@@ -37,16 +51,8 @@ def calclulate_module_accumulation_info(
     for commit in raw_git_history:
         if commit.author.email != email:
             continue
-        raw_diff = commit.repo.git.diff(commit.tree)
-        for changed_file in PatchSet(raw_diff):
-            filename = changed_file.path
-            if should_be_skipped(filename, config['skip_dirs']):
-                continue
-            module = _get_file_module(filename, config['modules'])
-            if not module:
-                continue
-            lines_touched = changed_file.added + changed_file.removed
-            touched_lines_per_module[module] += lines_touched
+        for module, new_touched_lines in get_touched_files_in_commit(commit, config):
+            touched_lines_per_module[module] += new_touched_lines
     modules_total_lines_map = fetch_modules_total_lines_map(
         raw_git_history[0].repo.working_dir,
         config,
