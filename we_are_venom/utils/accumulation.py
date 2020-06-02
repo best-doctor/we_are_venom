@@ -28,7 +28,10 @@ def is_module_accumulated(
     return touched_lines >= config['min_touched_lines_for_accumulated_module']
 
 
-def get_touched_files_in_commit(commit, config) -> Iterable[Tuple[str, int]]:
+def get_touched_files_in_commit(
+    commit: Commit,
+    config: Mapping[str, Any],
+) -> Iterable[Tuple[str, int]]:
     touched_lines_per_module: DefaultDict[str, int] = collections.defaultdict(int)
     raw_diff = commit.repo.git.diff(commit.tree)
     for changed_file in PatchSet(raw_diff):

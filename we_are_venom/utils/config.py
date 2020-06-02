@@ -19,12 +19,23 @@ def load_config_from(config_path: str, config_section_name: str = 'venom') -> Op
         modules.append(module)
 
     config = {
-        'history_depth_years': 1 / 12,
-        'min_lines_in_module': 20,
+        'history_depth_years': (
+            int(user_config['history_depth_years'])
+            if user_config.get('history_depth_years')
+            else 1 / 12
+        ),
+        'min_lines_in_module': (
+            int(user_config['min_lines_in_module'])
+            if user_config.get('min_lines_in_module')
+            else 20
+        ),
         'skip_dirs': ['/migrations/'],
         'extensions_to_check': ['py', 'html', 'css', 'md', 'cfg', 'js', 'ts'],
-        'min_touched_lines_for_accumulated_module': 50,
+        'min_touched_lines_for_accumulated_module': (
+            int(user_config['min_touched_lines_for_accumulated_module'])
+            if user_config.get('min_touched_lines_for_accumulated_module')
+            else 50
+        ),
     }
-    config.update(user_config)
     config['modules'] = modules
     return config
