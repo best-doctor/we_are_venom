@@ -5,7 +5,7 @@ from git import Commit
 from unidiff import PatchSet
 
 from we_are_venom.common_types import ModuleAccumulation
-from we_are_venom.utils.files import fetch_modules_total_lines_map
+from we_are_venom.utils.files import fetch_modules_total_lines_map, should_be_skipped
 
 if False:  # TYPE_CHECKING
     from typing import DefaultDict
@@ -40,6 +40,8 @@ def calclulate_module_accumulation_info(
         raw_diff = commit.repo.git.diff(commit.tree)
         for changed_file in PatchSet(raw_diff):
             filename = changed_file.path
+            if should_be_skipped(filename, config['skip_dirs']):
+                continue
             module = _get_file_module(filename, config['modules'])
             if not module:
                 continue

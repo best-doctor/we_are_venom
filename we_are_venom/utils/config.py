@@ -19,7 +19,7 @@ def load_config_from(config_path: str, config_section_name: str = 'venom') -> Op
         modules.append(module)
 
     config = {
-        'history_depth_years': 2,
+        'history_depth_years': 1 / 12,
         'min_lines_in_module': 20,
         'skip_dirs': ['/migrations/'],
         'extensions_to_check': ['py', 'html', 'css', 'md', 'cfg', 'js', 'ts'],
