@@ -1,9 +1,8 @@
-from typing import NamedTuple
-
-
-class Commit(NamedTuple):
-    pass
+from typing import NamedTuple, Optional
 
 
 class ModuleAccumulation(NamedTuple):
-    pass
+    module_name: str
+    touched_lines: int
+    total_lines: Optional[int]
+    is_accumulated: Optional[bool]

@@ -1,6 +1,28 @@
-from typing import List, Mapping, Any
+import collections
+import os
+from typing import List, Mapping, Any, Optional
 
-from we_are_venom.common_types import Commit, ModuleAccumulation
+from git import Commit
+from unidiff import PatchSet
+
+from we_are_venom.common_types import ModuleAccumulation
+from we_are_venom.utils.files import fetch_modules_total_lines_map
+
+
+def _get_file_module(filename: str, modules: List[str]) -> Optional[str]:
+    for module in modules:
+        if filename.startswith(module):
+            return module
+
+
+def is_module_accumulated(
+    touched_lines: int,
+    total_lines: Optional[int],
+    config: Mapping[str, Any],
+) -> Optional[bool]:
+    if not total_lines or total_lines < config['min_lines_in_module']:
+        return None
+    return touched_lines >= config['min_touched_lines_for_accumulated_module']
 
 
 def calclulate_module_accumulation_info(
@@ -8,8 +30,39 @@ def calclulate_module_accumulation_info(
     email: str,
     config: Mapping[str, Any],
 ) -> List[ModuleAccumulation]:
-    pass
+    touched_lines_per_module = collections.defaultdict(int)
+    for commit in raw_git_history:
+        if commit.author.email != email:
+            continue
+        raw_diff = commit.repo.git.diff(commit.tree)
+        for changed_file in PatchSet(raw_diff):
+            filename = changed_file.path
+            module = _get_file_module(filename, config['modules'])
+            if not module:
+                continue
+            lines_touched = changed_file.added + changed_file.removed
+            touched_lines_per_module[module] += lines_touched
+    modules_total_lines_map = fetch_modules_total_lines_map(
+        raw_git_history[0].repo.working_dir,
+        config,
+    )
+    print(modules_total_lines_map)
+    return [
+        ModuleAccumulation(
+            module_name=m,
+            touched_lines=l,
+            total_lines=modules_total_lines_map.get(m),
+            is_accumulated=is_module_accumulated(
+                l,
+                modules_total_lines_map.get(m),
+                config,
+            ),
+        )
+        for (m, l) in touched_lines_per_module.items()
+    ]
 
 
-def calculate_total_accumulation_percent(module_accumulation_info: List[ModuleAccumulation]) -> float:
-    pass
+def calculate_total_accumulation_percent(module_accumulation_info: List[ModuleAccumulation]) -> int:
+    accumulated_modules_number = len([m for m in module_accumulation_info if m.is_accumulated])
+    scored_modules_number = len([m for m in module_accumulation_info if m.is_accumulated is not None])
+    return int(accumulated_modules_number / scored_modules_number * 100)
