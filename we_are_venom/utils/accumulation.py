@@ -33,7 +33,7 @@ def get_touched_files_in_commit(
     config: Mapping[str, Any],
 ) -> Iterable[Tuple[str, int]]:
     touched_lines_per_module: DefaultDict[str, int] = collections.defaultdict(int)
-    raw_diff = commit.repo.git.diff(commit.tree, commit.parents[0])
+    raw_diff = commit.repo.git.diff(commit.tree, commit.parents[0] if commit.parents else None)
     for changed_file in PatchSet(raw_diff):
         filename = changed_file.path
         if should_be_skipped(filename, config['skip_dirs']):

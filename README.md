@@ -31,18 +31,25 @@ modules=
     core
 ```
 
+`modules` variable is required, others are optional.
+
 Check total accumulation level:
 
 ```terminal
-venom check --verbose melevir@gmail.com .
-
----------------------------------------------------------
-|   Module  | Total lines | Touched lines | Accumulated |
----------------------------------------------------------
-| apps/foo  | 120         | 106           | ✅          |
-| apps/bar  | 6           | 0             | -           |
-| scripts   | 620         | 14            | ❌          |
-| core      | 1865        | 215           | ✅          |
----------------------------------------------------------
-Total accumulation rate: 66%
+$ venom check melevir@gmail.com .
+┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━┓
+┃ Module                         ┃ Total lines ┃ Touched lines ┃ Accumulated ┃
+┡━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━╇━━━━━━━━━━━━━━━╇━━━━━━━━━━━━━┩
+│ opensource_watchman/pipelines/ │ 557         │ 120           │ ✅          │
+│ opensource_watchman/utils/     │ 30          │ 30            │ ❌          │
+│ opensource_watchman/templates/ │ 105         │ 127           │ ✅          │
+│ opensource_watchman/api/       │ 218         │ 12            │ ❌          │
+│ tests/                         │ 8           │ 16            │ -           │
+│ opensource_watchman/api/       │ 218         │ 0             │ ❌          │
+│ opensource_watchman/pipelines/ │ 557         │ 0             │ ❌          │
+│ opensource_watchman/templates/ │ 105         │ 0             │ ❌          │
+│ opensource_watchman/utils/     │ 30          │ 0             │ ❌          │
+│ tests/                         │ 8           │ 0             │ -           │
+└────────────────────────────────┴─────────────┴───────────────┴─────────────┘
+Total accumulation rate: 25%
 ```
