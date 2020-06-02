@@ -9,7 +9,7 @@ from we_are_venom.utils.accumulation import (
 )
 from we_are_venom.utils.config import load_config_from
 from we_are_venom.utils.git import fetch_git_history
-from we_are_venom.utils.output import output_accumulation_table
+from we_are_venom.utils.output import output_accumulation_table, output_commits
 
 
 @group()
@@ -43,11 +43,12 @@ def check(
         echo(f'Error loading config from {config_path}.', err=True)
         return
 
-    raw_git_history = fetch_git_history(path, config)
+    raw_git_history = fetch_git_history(path, email, config)
+    if verbose:
+        output_commits(raw_git_history)
     module_accumulation_info = calclulate_module_accumulation_info(raw_git_history, email, config)
     total_accumulation_percent = calculate_total_accumulation_percent(module_accumulation_info)
-    if verbose:
-        output_accumulation_table(module_accumulation_info)
+    output_accumulation_table(module_accumulation_info)
     print(f'[bold]Total accumulation rate: {total_accumulation_percent}%[/bold]')  # noqa: T001
 
 
