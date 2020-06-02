@@ -21,6 +21,7 @@ def load_config_from(config_path: str, config_section_name: str = 'venom') -> Op
     config = {
         'history_depth_years': 2,
         'min_lines_in_module': 20,
+        'skip_dirs': ['/migrations/'],
         'extensions_to_check': ['py', 'html', 'css', 'md', 'cfg', 'js', 'ts'],
         'min_touched_lines_for_accumulated_module': 50,
     }
