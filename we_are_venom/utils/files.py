@@ -5,9 +5,12 @@ from typing import Mapping, Any
 
 from we_are_venom.utils.lists import flat
 
+if False:  # TYPE_CHECKING
+    from typing import DefaultDict
+
 
 def fetch_modules_total_lines_map(path: str, config: Mapping[str, Any]) -> Mapping[str, int]:
-    module_total_lines = collections.defaultdict(int)
+    module_total_lines: DefaultDict[str, int] = collections.defaultdict(int)
     for module in config['modules']:
         wildcards = [
             os.path.join(path, module, '**', f'*.{e}')

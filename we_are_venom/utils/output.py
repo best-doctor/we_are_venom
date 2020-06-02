@@ -13,7 +13,7 @@ def output_accumulation_table(module_accumulation_info: List[ModuleAccumulation]
         False: '❌',
     }
     console = Console()
-    table = Table(show_header=True, header_style="bold magenta")
+    table = Table(show_header=True, header_style='bold magenta')
     table.add_column('Module', style='dim')
     table.add_column('Total lines')
     table.add_column('Touched lines')

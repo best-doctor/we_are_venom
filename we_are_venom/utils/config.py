@@ -8,7 +8,7 @@ def load_config_from(config_path: str, config_section_name: str = 'venom') -> Op
     parser.read(config_path)
     user_config = dict(parser[config_section_name]) if parser.has_section(config_section_name) else {}
     if 'modules' not in user_config:
-        return
+        return None
     modules = []
     for raw_module in user_config['modules'].split('\n'):
         module = raw_module.strip()

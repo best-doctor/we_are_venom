@@ -1,5 +1,4 @@
 import collections
-import os
 from typing import List, Mapping, Any, Optional
 
 from git import Commit
@@ -8,11 +7,15 @@ from unidiff import PatchSet
 from we_are_venom.common_types import ModuleAccumulation
 from we_are_venom.utils.files import fetch_modules_total_lines_map
 
+if False:  # TYPE_CHECKING
+    from typing import DefaultDict
+
 
 def _get_file_module(filename: str, modules: List[str]) -> Optional[str]:
     for module in modules:
         if filename.startswith(module):
             return module
+    return None
 
 
 def is_module_accumulated(
@@ -30,7 +33,7 @@ def calclulate_module_accumulation_info(
     email: str,
     config: Mapping[str, Any],
 ) -> List[ModuleAccumulation]:
-    touched_lines_per_module = collections.defaultdict(int)
+    touched_lines_per_module: DefaultDict[str, int] = collections.defaultdict(int)
     for commit in raw_git_history:
         if commit.author.email != email:
             continue
@@ -46,7 +49,6 @@ def calclulate_module_accumulation_info(
         raw_git_history[0].repo.working_dir,
         config,
     )
-    print(modules_total_lines_map)
     return [
         ModuleAccumulation(
             module_name=m,

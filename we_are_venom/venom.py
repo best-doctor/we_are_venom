@@ -13,7 +13,7 @@ from we_are_venom.utils.output import output_accumulation_table
 
 
 @group()
-def cli():
+def cli() -> None:
     pass
 
 
@@ -48,7 +48,7 @@ def check(
     total_accumulation_percent = calculate_total_accumulation_percent(module_accumulation_info)
     if verbose:
         output_accumulation_table(module_accumulation_info)
-    print(f'[bold]Total accumulation rate: {total_accumulation_percent}%[/bold]')
+    print(f'[bold]Total accumulation rate: {total_accumulation_percent}%[/bold]')  # noqa: T001
 
 
 if __name__ == '__main__':
