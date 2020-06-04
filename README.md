@@ -54,6 +54,29 @@ $ venom check melevir@gmail.com .
 Total accumulation rate: 25%
 ```
 
+Generate report for Grand Code Review:
+
+```
+terminal
+$ venom grand_code_review --min_lines=100 --suspicious_modules=finance,chat --generate_pretty_changesets
+# TODO
+Ticket num
+    Info:
+        Touched lines: 23
+        Touched modules: finance
+        Authors: melevir
+    Commits:
+        commit1 (link)
+        commit2 (link)
+...
+Summary: total tickets, total commits, total loc in report and filtered.
+```
+
+This one groups commits by ticket number, filters out commits groups, that
+touched more that `min_lines` lines or touched files in `suspicious_modules`.
+If `generate_pretty_changesets`, than every group is cherry picked to
+separate branch to generate pretty diff view.
+
 ## Contributing
 
 We would love you to contribute to our project. It's simple:
