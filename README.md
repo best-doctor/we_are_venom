@@ -56,9 +56,8 @@ Total accumulation rate: 25%
 
 Generate report for Grand Code Review:
 
-```
-terminal
-$ venom grand_code_review --min_lines=100 --suspicious_modules=finance,chat --generate_pretty_changesets
+```terminal
+$ venom grand_code_review 2020-05-01 2020-06-01 --min_lines=100 --suspicious_modules=finance,chat --generate_pretty_changesets
 # TODO
 Ticket num
     Info:
