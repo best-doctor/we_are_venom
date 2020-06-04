@@ -45,16 +45,16 @@ def grand_code_review(  # noqa: CFQ002
     config_file_name: str,
     config_file_path: str,
 ) -> None:
-    config_path = config_file_path or os.path.join(path, config_file_name)
-    if not os.path.exists(config_path):
-        echo(f'{config_path} does not exists. Please, provide venom config as docs says.')
+    if not modules:
+        config_path = config_file_path or os.path.join(path, config_file_name)
+        if not os.path.exists(config_path):
+            echo(f'{config_path} does not exists. Please, provide venom config as docs says.')
 
-    config = load_config_from(config_path)
-    if not config:
-        echo(f'Error loading config from {config_path}.', err=True)
-        return
-
-    modules = modules or config['modules']
+        config = load_config_from(config_path)
+        if not config:
+            echo(f'Error loading config from {config_path}.', err=True)
+            return
+        modules = config['modules']
     commit_regexp = r'^(Revert .+|Merge .+|((\w{3,5})-\d{1,4}): .+)'
     commits = fetch_git_history(
         path,
