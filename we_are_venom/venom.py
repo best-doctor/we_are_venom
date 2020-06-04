@@ -1,9 +1,8 @@
 import datetime
 import os
-from typing import Tuple, List
+from typing import Tuple
 
 from click import group, option, argument, Path, echo, DateTime
-from git import Commit
 from rich import print
 
 from we_are_venom.utils.accumulation import (
