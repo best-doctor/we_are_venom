@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Mapping, Any, Optional
 
 from git import Commit
 from rich import print
 from rich.console import Console
 from rich.table import Table
 
-from we_are_venom.common_types import ModuleAccumulation
+from we_are_venom.common_types import ModuleAccumulation, Ticket, CommitInfo
 
 
 def output_accumulation_table(module_accumulation_info: List[ModuleAccumulation]) -> None:
@@ -44,3 +44,13 @@ def output_commits(commits: List[Commit]) -> None:
         )
     console.print(table)
     print(f'[bold]Total {len(commits)} commits[/bold]')  # noqa: T001
+
+
+def output_review_report(
+    tickets: List[Ticket],
+    orphan_commits: List[CommitInfo],
+    pretty_changesets_map: Optional[Mapping[str, Mapping[str, str]]],
+    total_stat: Mapping[str, Any],
+    web_base_repo_url: str,
+) -> None:
+    pass

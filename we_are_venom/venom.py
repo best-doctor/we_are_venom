@@ -1,6 +1,9 @@
+import datetime
 import os
+from typing import Tuple, List
 
-from click import group, option, argument, Path, echo
+from click import group, option, argument, Path, echo, DateTime
+from git import Commit
 from rich import print
 
 from we_are_venom.utils.accumulation import (
@@ -8,13 +11,56 @@ from we_are_venom.utils.accumulation import (
     calculate_total_accumulation_percent,
 )
 from we_are_venom.utils.config import load_config_from
-from we_are_venom.utils.git import fetch_git_history
-from we_are_venom.utils.output import output_accumulation_table, output_commits
+from we_are_venom.utils.git import (
+    fetch_git_history, aggregate_commits_by_tickets, cherry_pick_tickets,
+)
+from we_are_venom.utils.output import (
+    output_accumulation_table, output_commits, output_review_report,
+)
+from we_are_venom.utils.review import calculate_total_review_stat
 
 
 @group()
 def cli() -> None:
     pass
+
+
+@cli.command()  # noqa: CFQ002
+@argument('path')
+@argument('date_from', type=DateTime())
+@argument('date_to', type=DateTime())
+@argument('web_base_repo_url')
+@option('--min_lines', type=int, default=0)
+@option('--module', '-m', 'modules', multiple=True)
+@option('--generate_pretty_changesets', is_flag=True, default=False)
+def grand_code_review(
+    path: str,
+    date_from: datetime.datetime,
+    date_to: datetime.datetime,
+    web_base_repo_url: str,
+    min_lines: int,
+    modules: Tuple[str],
+    generate_pretty_changesets: bool,
+) -> None:
+    commit_regexp = r''
+    commits = fetch_git_history(
+        path,
+        date_from=date_from,
+        date_to=date_to,
+        modules=modules,
+        get_extended_commits_info=True,
+    )
+    tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
+    tickets = [t for t in tickets if t.touched_lines >= min_lines]
+    total_stat = calculate_total_review_stat(tickets, orphan_commits)
+    pretty_changesets_map = cherry_pick_tickets(tickets) if generate_pretty_changesets else None
+    output_review_report(
+        tickets,
+        orphan_commits,
+        pretty_changesets_map,
+        total_stat,
+        web_base_repo_url,
+    )
 
 
 @cli.command()
@@ -43,7 +89,8 @@ def check(
         echo(f'Error loading config from {config_path}.', err=True)
         return
 
-    raw_git_history = fetch_git_history(path, email, config)
+    date_from = datetime.datetime.now() - datetime.timedelta(days=config['history_depth_years'] * 365)
+    raw_git_history = [c for c in fetch_git_history(path, date_from=date_from) if c.author.email == email]
     if verbose:
         output_commits(raw_git_history)
     module_accumulation_info = calclulate_module_accumulation_info(raw_git_history, email, config)

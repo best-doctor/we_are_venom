@@ -57,7 +57,7 @@ Total accumulation rate: 25%
 Generate report for Grand Code Review:
 
 ```terminal
-$ venom grand_code_review 2020-05-01 2020-06-01 --min_lines=100 --suspicious_modules=finance,chat --generate_pretty_changesets
+$ venom grand-code-review . 2020-05-01 2020-06-01 https://github.com/best-doctor/import_me/ --min_lines=100 --module=finance --module=chat --generate_pretty_changesets
 # TODO
 Ticket num
     Info:
@@ -72,9 +72,9 @@ Summary: total tickets, total commits, total loc in report and filtered.
 ```
 
 This one groups commits by ticket number, filters out commits groups, that
-touched more that `min_lines` lines or touched files in `suspicious_modules`.
-If `generate_pretty_changesets`, than every group is cherry picked to
-separate branch to generate pretty diff view.
+touched more that `min_lines` lines or touched files in `module` (can be
+multiple). If `generate_pretty_changesets`, than every group is cherry
+picked to separate branch to generate pretty diff view.
 
 ## Contributing
 
