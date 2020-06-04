@@ -32,7 +32,9 @@ def cli() -> None:
 @option('--min_lines', type=int, default=0)
 @option('--module', '-m', 'modules', multiple=True)
 @option('--generate_pretty_changesets', is_flag=True, default=False)
-def grand_code_review(
+@option('--config_file_name', default='setup.cfg')
+@option('--config_file_path', type=Path(exists=True, dir_okay=False, resolve_path=True))
+def grand_code_review(  # noqa: CFQ002
     path: str,
     date_from: datetime.datetime,
     date_to: datetime.datetime,
@@ -40,8 +42,20 @@ def grand_code_review(
     min_lines: int,
     modules: Tuple[str],
     generate_pretty_changesets: bool,
+    config_file_name: str,
+    config_file_path: str,
 ) -> None:
-    commit_regexp = r''
+    config_path = config_file_path or os.path.join(path, config_file_name)
+    if not os.path.exists(config_path):
+        echo(f'{config_path} does not exists. Please, provide venom config as docs says.')
+
+    config = load_config_from(config_path)
+    if not config:
+        echo(f'Error loading config from {config_path}.', err=True)
+        return
+
+    modules = modules or config['modules']
+    commit_regexp = r'^(Revert .+|Merge .+|((\w{3,5})-\d{1,4}): .+)'
     commits = fetch_git_history(
         path,
         date_from=date_from,
@@ -51,7 +65,7 @@ def grand_code_review(
     )
     tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
     tickets = [t for t in tickets if t.touched_lines >= min_lines]
-    total_stat = calculate_total_review_stat(tickets, orphan_commits)
+    total_stat = calculate_total_review_stat(tickets)
     pretty_changesets_map = cherry_pick_tickets(tickets) if generate_pretty_changesets else None
     output_review_report(
         tickets,

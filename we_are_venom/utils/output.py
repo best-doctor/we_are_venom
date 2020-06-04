@@ -5,7 +5,9 @@ from rich import print
 from rich.console import Console
 from rich.table import Table
 
-from we_are_venom.common_types import ModuleAccumulation, Ticket, CommitInfo
+from we_are_venom.common_types import ModuleAccumulation, Ticket
+from we_are_venom.commit import CommitInfo
+from we_are_venom.utils.lists import flat
 
 
 def output_accumulation_table(module_accumulation_info: List[ModuleAccumulation]) -> None:
@@ -53,4 +55,14 @@ def output_review_report(
     total_stat: Mapping[str, Any],
     web_base_repo_url: str,
 ) -> None:
-    pass
+    for ticket in tickets:
+        authors = ', '.join({c.commit.author.name for c in ticket.commits})
+        touched_modules = sorted(set(flat(c.touched_modules_info.keys() for c in ticket.commits)))
+        touched_modules_str = ', '.join(m.strip('/') for m in touched_modules)
+        print(
+            f'[bold red]{ticket.num}[/] [blue]{authors}[/] Touched modules: '
+            f'[green]{touched_modules_str}[/], touched lines: {ticket.touched_lines}.',
+        )
+        for commit in ticket.commits:
+            text = commit.commit.summary.split(': ')[-1]
+            print(f'\t{text}')

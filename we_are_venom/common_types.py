@@ -1,4 +1,7 @@
-from typing import NamedTuple, Optional
+from typing import NamedTuple, Optional, List
+
+if False:  # TYPE_CHECKING
+    from we_are_venom.commit import CommitInfo  # noqa: F401
 
 
 class ModuleAccumulation(NamedTuple):
@@ -9,13 +12,22 @@ class ModuleAccumulation(NamedTuple):
 
 
 class Ticket(NamedTuple):
-    added_lines: int
-    deleted_lines: int
+    num: str
+    commits: List['CommitInfo']
 
     @property
     def touched_lines(self) -> int:
-        return self.added_lines + self.touched_lines
+        return self.added_lines + self.deleted_lines
+
+    @property
+    def added_lines(self) -> int:
+        return sum(c.added_lines for c in self.commits)
+
+    @property
+    def deleted_lines(self) -> int:
+        return sum(c.deleted_lines for c in self.commits)
 
 
-class CommitInfo(NamedTuple):
-    pass
+class TouchedModuleInfo(NamedTuple):
+    added_lines: int
+    deleted_lines: int

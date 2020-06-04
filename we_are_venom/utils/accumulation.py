@@ -11,7 +11,7 @@ if False:  # TYPE_CHECKING
     from typing import DefaultDict
 
 
-def _get_file_module(filename: str, modules: List[str]) -> Optional[str]:
+def _get_file_module(filename: str, modules: Iterable[str]) -> Optional[str]:
     for module in modules:
         if filename.startswith(module):
             return module
