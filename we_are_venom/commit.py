@@ -15,6 +15,10 @@ class CommitInfo(NamedTuple):
     patches: PatchSet
 
     @property
+    def total_lines(self) -> int:
+        return self.added_lines + self.deleted_lines
+
+    @property
     def added_lines(self) -> int:
         return sum(p.added for p in self.patches)
 

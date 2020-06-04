@@ -50,11 +50,19 @@ def output_commits(commits: List[Commit]) -> None:
 
 def output_review_report(
     tickets: List[Ticket],
+    small_tickets: List[Ticket],
     orphan_commits: List[CommitInfo],
     pretty_changesets_map: Optional[Mapping[str, Mapping[str, str]]],
     total_stat: Mapping[str, Any],
     web_base_repo_url: str,
 ) -> None:
+    summary_max_width = 60
+    missed_lines = sum(t.touched_lines for t in small_tickets) + sum(c.total_lines for c in orphan_commits)
+    period_coverage = int(
+        total_stat['loc_touched_in_tickets']
+        / (total_stat['loc_touched_in_tickets'] + missed_lines)
+        * 100,
+    )
     for ticket in tickets:
         authors = ', '.join({c.commit.author.name for c in ticket.commits})
         touched_modules = sorted(set(flat(c.touched_modules_info.keys() for c in ticket.commits)))
@@ -65,4 +73,22 @@ def output_review_report(
         )
         for commit in ticket.commits:
             text = commit.commit.summary.split(': ')[-1]
-            print(f'\t{text}')
+            spaces = ''
+            if len(text) < summary_max_width:
+                spaces = ' ' * (summary_max_width - len(text))
+            else:
+                text = f'{text[:-(summary_max_width-3)]}...'
+            url = f'{web_base_repo_url}{commit.commit.hexsha}'
+            print(f'\t{text}{spaces}{url}')
+
+    console = Console()
+    table = Table(show_header=False, title='Summary', show_lines=True, padding=(0, 2))
+    table.add_column('Name')
+    table.add_column('Value')
+    table.add_row('Total commits to review', str(total_stat['commits_in_tickets']))
+    table.add_row('Total tickets to review', str(total_stat['tickets_amount']))
+    table.add_row('Total lines to review', str(total_stat['loc_touched_in_tickets']))
+    table.add_row('Average lines per ticket', str(total_stat['avg_lines_per_ticket']))
+    table.add_row('Lines missed from the review', str(missed_lines))
+    table.add_row('Period coverage', f'{period_coverage} %')
+    console.print('\n\n\n', table)

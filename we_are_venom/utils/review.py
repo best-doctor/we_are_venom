@@ -11,4 +11,5 @@ def calculate_total_review_stat(
         'commits_in_tickets': commits_in_tickets,
         'loc_touched_in_tickets': sum(t.touched_lines for t in tickets),
         'tickets_amount': len(tickets),
+        'avg_lines_per_ticket': int(sum(t.touched_lines for t in tickets) / len(tickets)),
     }

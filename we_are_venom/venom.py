@@ -64,11 +64,13 @@ def grand_code_review(  # noqa: CFQ002
         get_extended_commits_info=True,
     )
     tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
+    small_tickets = [t for t in tickets if t.touched_lines < min_lines]
     tickets = [t for t in tickets if t.touched_lines >= min_lines]
     total_stat = calculate_total_review_stat(tickets)
     pretty_changesets_map = cherry_pick_tickets(tickets) if generate_pretty_changesets else None
     output_review_report(
         tickets,
+        small_tickets,
         orphan_commits,
         pretty_changesets_map,
         total_stat,
