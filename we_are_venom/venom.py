@@ -32,6 +32,7 @@ def cli() -> None:
 @option('--min_lines', type=int, default=0)
 @option('--module', '-m', 'modules', multiple=True)
 @option('--generate_pretty_changesets', is_flag=True, default=False)
+@option('--short', is_flag=True, default=False)
 @option('--config_file_name', default='setup.cfg')
 @option('--config_file_path', type=Path(exists=True, dir_okay=False, resolve_path=True))
 def grand_code_review(  # noqa: CFQ002
@@ -42,6 +43,7 @@ def grand_code_review(  # noqa: CFQ002
     min_lines: int,
     modules: Tuple[str],
     generate_pretty_changesets: bool,
+    short: bool,
     config_file_name: str,
     config_file_path: str,
 ) -> None:
@@ -66,15 +68,14 @@ def grand_code_review(  # noqa: CFQ002
     tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
     small_tickets = [t for t in tickets if t.touched_lines < min_lines]
     tickets = [t for t in tickets if t.touched_lines >= min_lines]
-    total_stat = calculate_total_review_stat(tickets)
+    total_stat = calculate_total_review_stat(tickets, small_tickets, orphan_commits)
     pretty_changesets_map = cherry_pick_tickets(tickets) if generate_pretty_changesets else None
     output_review_report(
         tickets,
-        small_tickets,
-        orphan_commits,
         pretty_changesets_map,
         total_stat,
         web_base_repo_url,
+        short,
     )
 
 
