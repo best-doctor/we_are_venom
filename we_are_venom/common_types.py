@@ -1,3 +1,4 @@
+import datetime
 from typing import NamedTuple, Optional, List
 
 if False:  # TYPE_CHECKING
@@ -26,6 +27,14 @@ class Ticket(NamedTuple):
     @property
     def deleted_lines(self) -> int:
         return sum(c.deleted_lines for c in self.commits)
+
+    @property
+    def latest_commit_date(self) -> datetime.datetime:
+        return max(c.commit.committed_datetime for c in self.commits)
+
+    @property
+    def earliest_commit_date(self) -> datetime.datetime:
+        return min(c.commit.committed_datetime for c in self.commits)
 
 
 class TouchedModuleInfo(NamedTuple):

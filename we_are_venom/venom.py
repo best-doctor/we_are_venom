@@ -46,6 +46,7 @@ def grand_code_review(  # noqa: CFQ002
     short: bool,
     config_file_name: str,
     config_file_path: str,
+    max_dates_between_commits: int = 14,
 ) -> None:
     if not modules:
         config_path = config_file_path or os.path.join(path, config_file_name)
@@ -65,9 +66,15 @@ def grand_code_review(  # noqa: CFQ002
         modules=modules,
         get_extended_commits_info=True,
     )
-    tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
-    small_tickets = [t for t in tickets if t.touched_lines < min_lines]
-    tickets = [t for t in tickets if t.touched_lines >= min_lines]
+    all_tickets, orphan_commits = aggregate_commits_by_tickets(commits, commit_regexp)
+    tickets = [
+        t for t in all_tickets
+        if (
+            t.touched_lines >= min_lines
+            or (t.latest_commit_date - t.earliest_commit_date).days > max_dates_between_commits
+        )
+    ]
+    small_tickets = [t for t in all_tickets if t not in tickets]
     total_stat = calculate_total_review_stat(tickets, small_tickets, orphan_commits)
     pretty_changesets_map = cherry_pick_tickets(tickets) if generate_pretty_changesets else None
     output_review_report(
