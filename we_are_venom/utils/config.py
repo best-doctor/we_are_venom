@@ -1,6 +1,18 @@
 import configparser
 import os
-from typing import Any, Optional, Mapping
+from typing import Any, Optional, Mapping, List
+
+
+def extract_modules(raw_modules: str) -> List[str]:
+    modules = []
+    for raw_module in raw_modules.split('\n'):
+        module = raw_module.strip()
+        if not module:
+            continue
+        if not module.endswith(os.sep):
+            module = f'{module}{os.sep}'
+        modules.append(module)
+    return modules
 
 
 def load_config_from(config_path: str, config_section_name: str = 'venom') -> Optional[Mapping[str, Any]]:
@@ -9,14 +21,7 @@ def load_config_from(config_path: str, config_section_name: str = 'venom') -> Op
     user_config = dict(parser[config_section_name]) if parser.has_section(config_section_name) else {}
     if 'modules' not in user_config:
         return None
-    modules = []
-    for raw_module in user_config['modules'].split('\n'):
-        module = raw_module.strip()
-        if not module:
-            continue
-        if not module.endswith(os.sep):
-            module = f'{module}{os.sep}'
-        modules.append(module)
+    modules = extract_modules(user_config['modules'])
 
     config = {
         'history_depth_years': (
